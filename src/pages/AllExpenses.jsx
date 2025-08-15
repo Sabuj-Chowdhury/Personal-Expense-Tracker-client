@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import { MdEdit, MdDelete } from "react-icons/md";
+import Swal from "sweetalert2";
 import useAuth from "../hooks/useAuth";
 import useAxiosPublic from "../hooks/useAxiosPublic";
 import { authHeaders } from "../util/token";
+import toast from "react-hot-toast";
 
 const AllExpenses = () => {
   const axiosPublic = useAxiosPublic();
@@ -12,6 +14,7 @@ const AllExpenses = () => {
 
   const [expenses, setExpenses] = useState([]);
 
+  // Fetch expenses
   useEffect(() => {
     const fetchExpenses = async () => {
       try {
@@ -27,6 +30,38 @@ const AllExpenses = () => {
 
     fetchExpenses();
   }, [axiosPublic, token, user?.email]);
+
+  // Delete function
+  const handleDelete = async (id) => {
+    try {
+      await axiosPublic.delete(`/expenses/${id}`, authHeaders(token));
+      setExpenses((prev) => prev.filter((e) => e._id !== id));
+    } catch (err) {
+      toast.error(err.message);
+    }
+  };
+
+  // Confirmation delete
+  const handleCustomDelete = (id) => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        handleDelete(id);
+        Swal.fire({
+          title: "Deleted!",
+          text: "Expense has been deleted.",
+          icon: "success",
+        });
+      }
+    });
+  };
 
   return (
     <div className="p-4 max-w-6xl mx-auto">
@@ -71,7 +106,7 @@ const AllExpenses = () => {
                       <MdEdit size={20} />
                     </button>
                     <button
-                      onClick={() => console.log("Delete clicked", expense._id)}
+                      onClick={() => handleCustomDelete(expense._id)}
                       className="text-red-600 hover:text-red-800"
                       title="Delete"
                     >

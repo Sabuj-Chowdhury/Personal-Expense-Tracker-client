@@ -19,7 +19,6 @@ const AddExpense = () => {
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -29,13 +28,12 @@ const AddExpense = () => {
     e.preventDefault();
     setLoading(true);
     setError("");
-    setSuccess("");
 
     try {
       const res = await axiosPublic.post("/expenses", form, authHeaders(token));
       // console.log(res);
-      setSuccess("Expense added successfully!");
-      toast.success(success);
+
+      toast.success("Expense added successfully!");
       setForm({ title: "", amount: "", category: "", date: "", email: "" });
       navigate("/expenses");
     } catch (err) {
