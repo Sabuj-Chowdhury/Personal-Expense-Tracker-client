@@ -13,23 +13,35 @@ const AllExpenses = () => {
   const navigate = useNavigate();
 
   const [expenses, setExpenses] = useState([]);
+  const [categoryFilter, setCategoryFilter] = useState("All");
 
-  // Fetch expenses
+  // Fetch expenses from API using server-side filtering
+  const fetchExpenses = async () => {
+    try {
+      const query =
+        categoryFilter === "All"
+          ? ""
+          : `?category=${encodeURIComponent(categoryFilter)}`;
+      const res = await axiosPublic.get(
+        `/expenses${query}`,
+        authHeaders(token)
+      );
+
+      const userExpenses = res.data.data.filter(
+        (expense) => expense.email === user?.email
+      );
+      setExpenses(userExpenses);
+    } catch (err) {
+      toast.error("Failed to fetch expenses.");
+      console.log(err);
+    }
+  };
+
   useEffect(() => {
-    const fetchExpenses = async () => {
-      try {
-        const res = await axiosPublic.get("/expenses", authHeaders(token));
-        const userExpenses = res.data.data.filter(
-          (expense) => expense.email === user?.email
-        );
-        setExpenses(userExpenses);
-      } catch (err) {
-        console.log(err);
-      }
-    };
-
-    fetchExpenses();
-  }, [axiosPublic, token, user?.email]);
+    if (token && user?.email) {
+      fetchExpenses();
+    }
+  }, [categoryFilter, token, user?.email]);
 
   // Delete function
   const handleDelete = async (id) => {
@@ -37,7 +49,7 @@ const AllExpenses = () => {
       await axiosPublic.delete(`/expenses/${id}`, authHeaders(token));
       setExpenses((prev) => prev.filter((e) => e._id !== id));
     } catch (err) {
-      toast.error(err.message);
+      toast.error("Failed to delete expense.");
     }
   };
 
@@ -54,11 +66,7 @@ const AllExpenses = () => {
     }).then((result) => {
       if (result.isConfirmed) {
         handleDelete(id);
-        Swal.fire({
-          title: "Deleted!",
-          text: "Expense has been deleted.",
-          icon: "success",
-        });
+        Swal.fire("Deleted!", "Expense has been deleted.", "success");
       }
     });
   };
@@ -66,6 +74,23 @@ const AllExpenses = () => {
   return (
     <div className="p-4 max-w-6xl mx-auto">
       <h2 className="text-2xl font-bold mb-4">My Expenses</h2>
+
+      {/* Filter Dropdown */}
+      <div className="mb-4">
+        <label className="mr-2 font-medium">Filter by Category:</label>
+        <select
+          value={categoryFilter}
+          onChange={(e) => setCategoryFilter(e.target.value)}
+          className="border p-2 rounded outline-none"
+        >
+          <option value="All">All</option>
+          <option value="Food">Food</option>
+          <option value="Transport">Transport</option>
+          <option value="Shopping">Shopping</option>
+          <option value="Bills">Bills</option>
+          <option value="Other">Other</option>
+        </select>
+      </div>
 
       {expenses.length === 0 ? (
         <p className="text-gray-500">No expenses found.</p>
