@@ -7,6 +7,7 @@ import Register from "../pages/Register";
 import AddExpense from "../pages/AddExpense";
 import PrivateRoute from "./PrivateRoute";
 import AllExpenses from "../pages/AllExpenses";
+import UpdateExpense from "../components/UpdateExpense";
 
 const router = createBrowserRouter([
   {
@@ -35,6 +36,14 @@ const router = createBrowserRouter([
         element: (
           <PrivateRoute>
             <AllExpenses />
+          </PrivateRoute>
+        ),
+      },
+      {
+        path: "/update-expense/:id",
+        element: (
+          <PrivateRoute>
+            <UpdateExpense />
           </PrivateRoute>
         ),
       },
