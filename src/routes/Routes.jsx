@@ -8,6 +8,7 @@ import AddExpense from "../pages/AddExpense";
 import PrivateRoute from "./PrivateRoute";
 import AllExpenses from "../pages/AllExpenses";
 import UpdateExpense from "../components/UpdateExpense";
+import Statistics from "../pages/Statistics";
 
 const router = createBrowserRouter([
   {
@@ -44,6 +45,14 @@ const router = createBrowserRouter([
         element: (
           <PrivateRoute>
             <UpdateExpense />
+          </PrivateRoute>
+        ),
+      },
+      {
+        path: "/stats",
+        element: (
+          <PrivateRoute>
+            <Statistics />
           </PrivateRoute>
         ),
       },
