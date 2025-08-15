@@ -50,7 +50,7 @@ export default function AuthProvider({ children }) {
     localStorage.removeItem(USER_KEY);
   };
 
-  console.log(user);
+  // console.log(user);
 
   const value = {
     user,
