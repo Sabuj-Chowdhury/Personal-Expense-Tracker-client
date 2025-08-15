@@ -1,7 +1,18 @@
+import { Outlet } from "react-router";
+import Footer from "../components/Footer";
+import Navbar from "../components/Navbar";
+
 const MainLayout = () => {
   return (
-    <div>
-      <h1 className="text-4xl text-amber-700">Hello</h1>
+    <div className="">
+      {/* Navbar */}
+      <Navbar />
+      {/* Outlet */}
+      <div className="min-h-[calc(100vh-170px)]">
+        <Outlet />
+      </div>
+      {/* Footer */}
+      <Footer />
     </div>
   );
 };
